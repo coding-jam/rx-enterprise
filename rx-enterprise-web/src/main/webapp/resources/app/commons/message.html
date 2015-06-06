@@ -1,0 +1,20 @@
+<form>
+    <div layout="row">
+        <div flex="90">
+            <md-input-container>
+                <label>Message</label>
+                <input type="text" ng-model="message" required/>
+            </md-input-container>
+        </div>
+        <div flex="10">
+            <md-button class="md-raised md-primary" ng-click="sendMessage(message)">Send</md-button>
+        </div>
+    </div>
+    <div layout="row">
+        <div flex>
+            <ul ng-repeat="log in logs" ng-show="logs.length > 0">
+                <li>{{log.date | date : 'medium'}}: {{log.message}}</li>
+            </ul>
+        </div>
+    </div>
+</form>
