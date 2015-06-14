@@ -5,12 +5,17 @@ angular.module('appServices', [])
 
         var service = {
 
+            socketTypes : {
+                cdi : '/socket/echo-message',
+                rx : '/socket/rx-echo-message'
+            },
+
             send : function(message) {
                 return $http.post('rest/message', {message : message});
             },
 
-            openSocket : function() {
-                var socket = new WebSocket(getRootUri() + '/socket/echo-message');
+            openSocket : function(socketType) {
+                var socket = new WebSocket(getRootUri() + (this.socketTypes[socketType] || this.socketTypes['cdi']));
                 var deferred = $q.defer();
                 socket.onopen = function(event) {
                     $log.log(event);

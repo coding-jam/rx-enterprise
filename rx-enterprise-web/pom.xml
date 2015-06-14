@@ -96,15 +96,21 @@
         <dependency>
             <groupId>org.jboss.spec.javax.websocket</groupId>
             <artifactId>jboss-websocket-api_1.0_spec</artifactId>
-            <version>1.0.0.Final</version>
-            <scope>provided</scope>
         </dependency>
         <!-- JSR-353  -->
         <dependency>
             <groupId>org.jboss.spec.javax.json</groupId>
             <artifactId>jboss-json-api_1.0_spec</artifactId>
-            <version>1.0.0.Final</version>
-            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.spec.javax.enterprise.concurrent</groupId>
+            <artifactId>jboss-concurrency-api_1.0_spec</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
         </dependency>
 
     </dependencies>

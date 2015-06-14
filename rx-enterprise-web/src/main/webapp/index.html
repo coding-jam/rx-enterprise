@@ -4,6 +4,10 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
     <link rel="stylesheet" href="resources/css/app.css">
     <meta name="viewport" content="initial-scale=1"/>
+    <style type="text/css">
+        a {text-decoration: none}
+        .error {color: #CC2200}
+    </style>
 </head>
 <body layout="column" ng-controller="appController">
 <md-toolbar layout="row">
@@ -15,7 +19,16 @@
 <div layout="row" flex>
     <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left"
                 md-is-locked-open="$mdMedia('gt-sm')">
-
+        <md-list>
+            <md-list-item class="md-2-line" ng-repeat="item in menuItems">
+                <a ui-sref="{{item.name}}">
+                    <div class="md-list-item-text">
+                        <h3>{{item.name | uppercase}}</h3>
+                        <p>{{item.data.title}}</p>
+                    </div>
+                </a>
+            </md-list-item>
+        </md-list>
     </md-sidenav>
     <div layout="column" flex id="content">
         <md-content layout="column" flex class="md-padding">
@@ -31,7 +44,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.9.0/angular-material.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
 <script src="resources/app/commons/services.js"></script>
+<script src="resources/app/commons/controllers.js"></script>
 <script src="resources/app/cdi-message/cdi-message.js"></script>
+<script src="resources/app/rx-message/rx-message.js"></script>
 <script src="resources/app/app.js"></script>
 </body>
 </html>

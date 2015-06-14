@@ -9,16 +9,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Message {
 
+    public enum Status {OK, ERROR}
+
     @NotNull
     private String message;
 
     private String sessionId;
+
+    private Status status = Status.OK;
 
     public Message() {}
 
     public Message(String message, String sessionId) {
         this.message = message;
         this.sessionId = sessionId;
+    }
+
+    public Message(String message, String sessionId, Status status) {
+        this.message = message;
+        this.sessionId = sessionId;
+        this.status = status;
     }
 
     public String getMessage() {
@@ -35,5 +45,9 @@ public class Message {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 }

@@ -20,9 +20,16 @@ public class EchoMessageService {
     private Event<Message> echoComplete;
 
     @Asynchronous
-    public void echo(Message message) throws InterruptedException {
+    public void echoAsync(Message message) throws InterruptedException {
         TimeUnit.SECONDS.sleep(5);
         message.setMessage("Echo " + message.getMessage());
         echoComplete.fire(message);
+    }
+
+    public Message echoSync(Message message) throws InterruptedException {
+        TimeUnit.SECONDS.sleep(5);
+        message.setMessage("Echo " + message.getMessage());
+
+        return message;
     }
 }

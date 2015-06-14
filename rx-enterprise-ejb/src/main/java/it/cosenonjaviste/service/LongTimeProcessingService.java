@@ -1,9 +1,13 @@
 package it.cosenonjaviste.service;
 
+import javax.annotation.Resource;
+import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
+import javax.enterprise.concurrent.ManagedExecutors;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**

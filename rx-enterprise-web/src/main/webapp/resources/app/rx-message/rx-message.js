@@ -1,15 +1,15 @@
-angular.module('cdiApp', ['ui.router'])
+angular.module('rxApp', ['ui.router'])
 
     .config(function($stateProvider) {
 
         $stateProvider
-            .state('cdi', {
-                url: "/cdi",
+            .state('rx', {
+                url: "/rx",
                 templateUrl: "resources/app/commons/message.html",
                 controller: 'messageController',
                 data: {
-                    socket: 'cdi',
-                    title: 'Asynchronous EJB + CDI Event'
+                    socket: 'rx',
+                    title: 'RxJava + ManagedExecutors'
                 }
             });
     });

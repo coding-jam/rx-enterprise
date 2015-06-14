@@ -18,8 +18,9 @@ public class MessageEncoder implements Encoder.Text<Message> {
     @Override
     public String encode(Message message) throws EncodeException {
         return Json.createObjectBuilder()
-                .add("message", message.getMessage())
+                .add("message", message.getMessage() != null ? message.getMessage() : "")
                 .add("sessionId", message.getSessionId())
+                .add("status", message.getStatus().toString())
                 .build().toString();
     }
 
