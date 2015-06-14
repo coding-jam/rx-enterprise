@@ -18,13 +18,19 @@ angular.module('appServices', [])
                 };
                 socket.onerror = function(event) {
                     $log.log(event);
-                    socket.onerror = null;
+                    socket.onerror = function(event) {
+                        alert(event);
+                    };
                     deferred.reject(event);
-                }
+                };
+
+                socket.onclose = function(event) {
+                    $log.log(event);
+                };
 
                 function getRootUri() {
-                    return "ws://" + (document.location.hostname == "" ? "localhost" : document.location.hostname) + ":" +
-                        (document.location.port == "" ? "8080" : document.location.port);
+                    return "ws://" + (document.location.hostname == "" ? "localhost" : document.location.hostname) +
+                        (document.location.port == "" ? "" : ":" + document.location.port);
                 }
 
                 return deferred.promise;

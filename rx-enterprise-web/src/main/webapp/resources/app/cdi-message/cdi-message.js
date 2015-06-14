@@ -19,16 +19,17 @@ angular.module('cdiApp', ['ui.router'])
             .then(function(socket) {
 
                     log("Before send message: " + message);
-                    socket.send(message);
+                    socket.send(angular.toJson({message: message}));
                     log("After send message: " + message);
 
                     socket.onmessage = function(event) {
                         $log.log(event);
                         $scope.$apply(function() {
-                            log(event.data);
+                            var response = angular.fromJson(event.data);
+                            log(response.message + ', session id: ' + response.sessionId);
                         });
                         if (event.data.indexOf('Echo') != -1) {
-                            socket.close();
+                            socket.close(1000, 'Thank you');
                         }
                     }
 

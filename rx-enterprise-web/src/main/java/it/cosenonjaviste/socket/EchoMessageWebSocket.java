@@ -2,6 +2,8 @@ package it.cosenonjaviste.socket;
 
 import it.cosenonjaviste.dtos.Message;
 import it.cosenonjaviste.service.EchoMessageService;
+import it.cosenonjaviste.socket.modelcodec.MessageDecoder;
+import it.cosenonjaviste.socket.modelcodec.MessageEncoder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -18,7 +20,7 @@ import java.util.logging.Logger;
  *
  * Aggiunta una dipendenza nel pom del progetto web (jboss-websocket-api_1.0_spec)
  */
-@ServerEndpoint(value = "/socket/echo-message")
+@ServerEndpoint(value = "/socket/echo-message", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class EchoMessageWebSocket {
 
     private static final Logger LOGGER = Logger.getLogger(EchoMessageWebSocket.class.getName());
@@ -36,34 +38,36 @@ public class EchoMessageWebSocket {
     }
 
     @OnMessage
-    public String onMessage(String message, Session session) throws InterruptedException {
-        Message msg = new Message();
-        msg.setMessage(message);
+    public Message onMessage(Message msg, Session session) throws InterruptedException {
         msg.setSessionId(session.getId());
 
         messageService.echo(msg);
 
-        String response = "Message '" + message + "' received";
+        String response = "Message '" + msg.getMessage() + "' received";
         LOGGER.info(logWithDetails(response));
-        return response;
+        return new Message(response, session.getId());
     }
 
     @OnClose
-    public void onClose(Session session) {
+    public void onClose(CloseReason reason, Session session) {
         LOGGER.info(logWithDetails("Session " + session.getId() + " disconnected"));
+        LOGGER.info("Close code: " + reason.getCloseCode() + "; close phrase: " + reason.getReasonPhrase());
         sessionHolder.remove(session);
     }
 
     @OnError
-    public void onError(Throwable error) {
+    public void onError(Throwable error, Session session) throws IOException, EncodeException {
         LOGGER.log(Level.SEVERE, error.getMessage(), error);
+        if (session.isOpen()) {
+            session.getBasicRemote().sendObject(new Message(error.getMessage(), session.getId()));
+        }
     }
 
-    public void onEchoMessage(@Observes Message message) throws IOException {
+    public void onEchoMessage(@Observes Message message) throws IOException, EncodeException {
         Optional<Session> session = sessionHolder.get(message.getSessionId());
         if (session.isPresent()) {
             LOGGER.info(logWithDetails("Sending response to session " + session.get().getId()));
-            session.get().getBasicRemote().sendText(message.getMessage());
+            session.get().getBasicRemote().sendObject(message);
         } else {
             LOGGER.severe("Session " + message.getSessionId() + " not present or already closed!");
         }

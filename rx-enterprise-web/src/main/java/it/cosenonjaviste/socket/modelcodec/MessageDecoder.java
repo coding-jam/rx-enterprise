@@ -8,7 +8,9 @@ import javax.json.JsonReader;
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
+import javax.xml.bind.JAXB;
 import java.io.StringReader;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,27 +23,33 @@ public class MessageDecoder implements Decoder.Text<Message> {
 
     @Override
     public Message decode(String s) throws DecodeException {
-        try(JsonReader reader = Json.createReader(new StringReader(s))) {
-            JsonObject jsonObject = reader.readObject();
 
+        return tryDecode(s, jsonObject -> {
             Message message = new Message();
             message.setMessage(jsonObject.getString("message"));
             return message;
+        });
 
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            throw new DecodeException(s, e.getMessage(), e);
-        }
     }
 
     @Override
     public boolean willDecode(String s) {
-        try(JsonReader reader = Json.createReader(new StringReader(s))) {
-            reader.readObject();
-            return true;
-        } catch (Exception e) {
+//        return false;
+        try {
+            return tryDecode(s, jsonObject -> {
+                return true;
+            });
+        } catch (DecodeException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             return false;
+        }
+    }
+
+    private <T> T tryDecode(String input, Function<JsonObject, T> decode) throws DecodeException {
+
+        try(JsonReader reader = Json.createReader(new StringReader(input))) {
+            JsonObject jsonObject = reader.readObject();
+            return decode.apply(jsonObject);
         }
     }
 
