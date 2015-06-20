@@ -11,15 +11,15 @@ angular.module('appControllers', ['ui.router'])
             messageService.openSocket($state.current.data.socket)
             .then(function(socket) {
 
-                    log("Before send message: " + message);
+                    log("Client log: Before send message: " + message);
                     socket.send(angular.toJson({message: message}));
-                    log("After send message: " + message);
+                    log("Client log: After send message: " + message);
 
                     socket.onmessage = function(event) {
                         $log.log(event);
                         $scope.$apply(function() {
                             var response = angular.fromJson(event.data);
-                            log(response.message + ', session id: ' + response.sessionId, response.status || "OK");
+                            log('Server log: ' + response.message + ', session id: ' + response.sessionId, response.status || "OK");
 
                             if (event.data.indexOf('Echo') != -1) {
                                 socket.close(1000, 'Thank you');
