@@ -49,7 +49,7 @@ public class EchoMessageWebSocket {
 
     @OnClose
     public void onClose(CloseReason reason, Session session) throws IOException, EncodeException {
-        sendLog(session, logWithDetails("Session " + session.getId() + " disconnected"));
+        LOGGER.info(logWithDetails("Session " + session.getId() + " disconnected"));
         LOGGER.info("Close code: " + reason.getCloseCode() + "; close phrase: " + reason.getReasonPhrase());
         sessionHolder.remove(session);
     }
