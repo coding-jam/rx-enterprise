@@ -31,25 +31,25 @@ public class EchoMessageWebSocket {
     private EchoMessageService messageService;
 
     @OnOpen
-    public void onOpen(Session session) {
-        LOGGER.info(logWithDetails("Session " + session.getId() + " connected"));
+    public void onOpen(Session session) throws IOException, EncodeException {
+        sendLog(session, logWithDetails("Session " + session.getId() + " connected"));
         sessionHolder.add(session);
     }
 
     @OnMessage
-    public Message onMessage(Message msg, Session session) throws InterruptedException {
+    public Message onMessage(Message msg, Session session) throws InterruptedException, IOException, EncodeException {
         msg.setSessionId(session.getId());
 
         messageService.echoAsync(msg);
 
-        String response = "Message '" + msg.getMessage() + "' received";
-        LOGGER.info(logWithDetails(response));
+        String response = logWithDetails("Message '" + msg.getMessage() + "' received");
+        LOGGER.info(response);
         return new Message(response, session.getId());
     }
 
     @OnClose
-    public void onClose(CloseReason reason, Session session) {
-        LOGGER.info(logWithDetails("Session " + session.getId() + " disconnected"));
+    public void onClose(CloseReason reason, Session session) throws IOException, EncodeException {
+        sendLog(session, logWithDetails("Session " + session.getId() + " disconnected"));
         LOGGER.info("Close code: " + reason.getCloseCode() + "; close phrase: " + reason.getReasonPhrase());
         sessionHolder.remove(session);
     }
@@ -65,7 +65,7 @@ public class EchoMessageWebSocket {
     public void onEchoMessage(@Observes Message message) throws IOException, EncodeException {
         Optional<Session> session = sessionHolder.get(message.getSessionId());
         if (session.isPresent()) {
-            LOGGER.info(logWithDetails("Sending response to session " + session.get().getId()));
+            sendLog(session.get(), logWithDetails("Sending response to session " + session.get().getId()));
             session.get().getBasicRemote().sendObject(message);
         } else {
             LOGGER.severe("Session " + message.getSessionId() + " not present or already closed!");
@@ -74,5 +74,10 @@ public class EchoMessageWebSocket {
 
     private String logWithDetails(String message) {
         return message + " on thread " + Thread.currentThread().getId() + " and bean hash " + this.hashCode();
+    }
+
+    private void sendLog(Session session, String log) throws IOException, EncodeException {
+        LOGGER.info(log);
+        session.getBasicRemote().sendObject(new Message(log, session.getId()));
     }
 }

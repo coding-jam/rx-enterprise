@@ -33,8 +33,8 @@ public class RxEchoMessageWebSocket {
     private ObservableExecutorAdapter executorAdapter;
 
     @OnOpen
-    public void onOpen(Session session) {
-        LOGGER.info(logWithDetails("Session " + session.getId() + " connected"));
+    public void onOpen(Session session) throws IOException, EncodeException {
+       sendLog(session, logWithDetails("Session " + session.getId() + " connected"));
     }
 
     @OnMessage
@@ -50,8 +50,8 @@ public class RxEchoMessageWebSocket {
             }
         }).subscribe(notifyEcho(session), notifyError(session));
 
-        String response = "Message '" + msg.getMessage() + "' received";
-        LOGGER.info(logWithDetails(response));
+        String response = logWithDetails("Message '" + msg.getMessage() + "' received");
+        LOGGER.info(response);
         return new Message(response, session.getId());
     }
 
@@ -69,8 +69,8 @@ public class RxEchoMessageWebSocket {
     private Action1<Message> notifyEcho(Session session) {
         return echo -> {
             if (session.isOpen()) {
-                LOGGER.info(logWithDetails("Sending response to session " + session.getId()));
                 try {
+                    sendLog(session, logWithDetails("Sending response to session " + session.getId()));
                     session.getBasicRemote().sendObject(echo);
                 } catch (IOException | EncodeException e) {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -98,5 +98,10 @@ public class RxEchoMessageWebSocket {
 
     private String logWithDetails(String message) {
         return message + " on thread " + Thread.currentThread().getId() + " and bean hash " + this.hashCode();
+    }
+
+    private void sendLog(Session session, String log) throws IOException, EncodeException {
+        LOGGER.info(log);
+        session.getBasicRemote().sendObject(new Message(log, session.getId()));
     }
 }

@@ -14,7 +14,9 @@
     <div layout="row">
         <div flex>
             <ul ng-repeat="log in logs" ng-show="logs.length > 0">
-                <li ng-class="{'error' : log.status == 'ERROR'}">{{log.date | date : 'medium'}}: {{log.message}}</li>
+                <li ng-class="{'error' : log.status == 'ERROR', 'client' : log.type == 'client' && log.status == 'OK', 'server' : log.type == 'server' && log.status == 'OK'}">
+                    {{log.date | date : 'medium'}}: {{log.message}}
+                </li>
             </ul>
         </div>
     </div>
